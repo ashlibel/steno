@@ -16,11 +16,11 @@ class ParseError(Exception):
 
 class Parser:
     def __init__(self, tokens: List[Token]):
-        # Strip comments; they carry no semantic meaning
+        # Strip comments--> they have NO semantic menaning 
         self.tokens = [t for t in tokens if t.type != TT.COMMENT]
         self.pos    = 0
 
-    # ── Helpers ───────────────────────────────────────────────────────────────
+    # helpers 
 
     def peek(self, offset: int = 0) -> Token:
         idx = self.pos + offset
@@ -54,8 +54,6 @@ class Parser:
 
     def ln(self) -> int:
         return self.peek().line
-
-    # ── Top-level ─────────────────────────────────────────────────────────────
 
     def parse(self) -> N.Program:
         self.skip_newlines()

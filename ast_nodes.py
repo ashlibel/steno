@@ -1,21 +1,17 @@
-"""
-STENO AST Nodes
-Plain dataclass containers — no logic.
-The parser writes these; the interpreter and transpiler read them.
-"""
+
 
 from dataclasses import dataclass, field
 from typing import Any, List, Optional
 
 
-# ── Base ──────────────────────────────────────────────────────────────────────
+#Base 
 
 @dataclass
 class Node:
     line: int = field(default=0, repr=False)
 
 
-# ── Statements ────────────────────────────────────────────────────────────────
+#Statements
 
 @dataclass
 class Program(Node):
@@ -28,12 +24,13 @@ class ExprStmt(Node):
 @dataclass
 class VarDecl(Node):
     name:  str = ""
-    value: Any = None          # Optional initialiser expression
+    value: Any = None          
 
+# =  +=  -=  *=  /=
 @dataclass
 class Assign(Node):
     target: Any = None
-    op:     str = "="          # =  +=  -=  *=  /=
+    op:     str = "="         
     value:  Any = None
 
 @dataclass
@@ -139,7 +136,7 @@ class WithStmt(Node):
     body:    List[Any]     = field(default_factory=list)
 
 
-# ── Expressions ───────────────────────────────────────────────────────────────
+#Expressions
 
 @dataclass
 class IntLit(Node):

@@ -1,27 +1,20 @@
-# list_ops.sten
-# Simple Program 3 — List operations and comprehensions
-# Demonstrates: vr, lp, pr, fr (list comp), wh, built-ins
-
 vr numbers = [5, 2, 8, 1, 9, 3, 7, 4, 6, 10]
 
-pr "=== List Operations ==="
+pr " The List Operations"
 pr "Original list:" numbers
 pr "Length:" len(numbers)
 pr "Sum:" sum(numbers)
 pr "Min:" min(numbers)
 pr "Max:" max(numbers)
 
-# List comprehension — evens
 vr evens = [x fr numbers if x % 2 == 0]
 pr "Even numbers:" evens
 
-# Squares using a loop instead (clearer)
 vr squares = []
 lp x numbers
     squares.append(x * x)
 pr "Squares:" squares
 
-# Manual sort with while loop (bubble sort)
 vr arr = [5, 2, 8, 1, 9, 3]
 vr n = len(arr)
 vr i = 0
@@ -37,7 +30,6 @@ wh i < n - 1
 
 pr "Sorted:" arr
 
-# Iterating with lp (for-in)
 pr ""
 pr "Counting down:"
 lp x [5, 4, 3, 2, 1]

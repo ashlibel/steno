@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Optional
 import ast_nodes as N
 
 
-# ── Sentinel values ───────────────────────────────────────────────────────────
+# Sentinel values 
 
 class _ReturnSignal(Exception):
     def __init__(self, value): self.value = value
@@ -27,7 +27,6 @@ class _YieldSignal(Exception):
     def __init__(self, value): self.value = value
 
 
-# ── Runtime error ─────────────────────────────────────────────────────────────
 
 class RuntimeError_(Exception):
     def __init__(self, msg: str, line: int = 0):
@@ -35,7 +34,7 @@ class RuntimeError_(Exception):
         self.line = line
 
 
-# ── Environment (scope) ───────────────────────────────────────────────────────
+
 
 class Env:
     """Lexical scope chain."""
@@ -73,7 +72,7 @@ class Env:
         return f"Env({list(self._store.keys())})"
 
 
-# ── STENO function wrapper ────────────────────────────────────────────────────
+#STENO function wrapper 
 
 class StenoFunction:
     def __init__(self, node: N.FuncDef, closure: Env):
@@ -169,7 +168,7 @@ class BoundMethod:
         return self.func.call(interp, [self.instance] + list(args), kwargs)
 
 
-# ── Built-in globals ──────────────────────────────────────────────────────────
+# Built-in globals 
 
 def _make_builtins() -> Dict[str, Any]:
     import os, random, json
@@ -224,7 +223,7 @@ def _make_builtins() -> Dict[str, Any]:
     }
 
 
-# ── Interpreter ───────────────────────────────────────────────────────────────
+# Interpreter 
 
 class Interpreter:
     def __init__(self, verbose: bool = False):
@@ -234,7 +233,7 @@ class Interpreter:
             self.globals.set(k, v)
         self._output: List[str] = []   # captured output for tests
 
-    # ── Public API ────────────────────────────────────────────────────────────
+    #Public API 
 
     def run(self, tree: N.Program):
         self.exec_block(tree.body, self.globals)
@@ -246,7 +245,7 @@ class Interpreter:
         tree   = Parser(tokens).parse()
         self.run(tree)
 
-    # ── Block / statement execution ───────────────────────────────────────────
+    # Block / statement execution
 
     def exec_block(self, stmts: List[N.Node], env: Env):
         for stmt in stmts:
@@ -260,9 +259,7 @@ class Interpreter:
                                   getattr(node, "line", 0))
         handler(node, env)
 
-    # ─────────────────────────────────────────────────────────────────────────
-    # Statement handlers   (_s_<NodeClass>)
-    # ─────────────────────────────────────────────────────────────────────────
+
 
     def _s_ExprStmt(self, node: N.ExprStmt, env: Env):
         self.eval_expr(node.expr, env)
@@ -450,9 +447,9 @@ class Interpreter:
                 inner.set(node.alias, val)
             self.exec_block(node.body, inner)
 
-    # ─────────────────────────────────────────────────────────────────────────
+
     # Expression evaluator
-    # ─────────────────────────────────────────────────────────────────────────
+   
 
     def eval_expr(self, node: N.Node, env: Env) -> Any:
         if node is None: return None

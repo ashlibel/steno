@@ -61,7 +61,7 @@ REPL_HELP = """
 │  fr math im sqrt     from math import sqrt               │
 │  cl Stack            class Stack:                        │
 │  tr / ex Exception   try / except Exception:             │
-│  [x fr items if c]   [x for x in items if c]            │
+│  [x fr items if c]   [x for x in items if c]             │
 │                                                          │
 │  Long-form aliases always work:                          │
 │  for / while / def / class / return / print / etc.       │

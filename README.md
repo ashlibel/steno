@@ -6,13 +6,13 @@
 ## Running the interpreter
 
 ```bash
-# Run any .sten file
+# Run any .sten file this would be our main format 
 python steno.py run examples/hello_world.sten
 
-# Run all 5 examples at once
+# Run all 5 examples at once --> prob use during class
 python steno.py demo
 
-# Interactive REPL
+# Interactive REPL 
 python steno.py
 
 # Transpile to Python (backup/export)
