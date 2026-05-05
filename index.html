@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STENO — A Shorthand Programming Language</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Caveat:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --paper:    #f7f3e8;
+      --paper2:   #ede8d9;
+      --ink:      #1c1209;
+      --ink-mid:  #5c4a2a;
+      --ink-light:#9c845a;
+      --red:      #8b1a1a;
+      --accent:   #2a4a6b;
+      --rule:     rgba(44,30,10,0.13);
+      --mono:     'IBM Plex Mono', monospace;
+      --hand:     'Caveat', cursive;
+      --type:     'Special Elite', cursive;
+      --display:  'Syne', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--type);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ruled paper lines */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 31px,
+        var(--rule) 31px,
+        var(--rule) 32px
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* red margin line */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; bottom: 0;
+      left: 72px;
+      width: 1.5px;
+      background: rgba(139,26,26,0.18);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 5rem 2rem 4rem 6rem;
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    .header-shorthand {
+      position: absolute;
+      right: -20px;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.07;
+      width: 55vw;
+      max-width: 600px;
+    }
+
+    .header-hole {
+      position: absolute;
+      left: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 56px;
+      top: 80px;
+    }
+
+    .hole {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--paper2);
+      border: 1.5px solid var(--ink-light);
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.15);
+    }
+
+    .label-stamp {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    h1 {
+      font-family: var(--display);
+      font-size: clamp(5rem, 14vw, 11rem);
+      font-weight: 800;
+      line-height: 0.85;
+      letter-spacing: -0.05em;
+      margin-bottom: 0.5rem;
+      animation: fadeUp 0.5s 0.1s ease both;
+    }
+
+    .h1-handwrite {
+      font-family: var(--hand);
+      font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+      font-weight: 600;
+      color: var(--red);
+      display: block;
+      letter-spacing: 0.01em;
+      margin-top: 0.3rem;
+      animation: fadeUp 0.5s 0.2s ease both;
+    }
+
+    .tagline {
+      font-family: var(--type);
+      font-size: clamp(0.88rem, 1.8vw, 1.02rem);
+      color: var(--ink-mid);
+      max-width: 440px;
+      margin: 1.5rem 0 2.5rem;
+      line-height: 1.9;
+      animation: fadeUp 0.5s 0.25s ease both;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      animation: fadeUp 0.5s 0.3s ease both;
+    }
+
+    .btn {
+      font-family: var(--type);
+      font-size: 0.9rem;
+      letter-spacing: 0.03em;
+      text-decoration: none;
+      padding: 0.65rem 1.6rem;
+      border: 1.5px solid var(--ink);
+      color: var(--ink);
+      transition: background 0.15s, color 0.15s;
+      display: inline-block;
+      position: relative;
+    }
+    .btn:hover { background: var(--ink); color: var(--paper); }
+    .btn.primary { background: var(--ink); color: var(--paper); }
+    .btn.primary:hover { background: var(--accent); border-color: var(--accent); }
+
+    .btn-ann {
+      font-family: var(--hand);
+      font-size: 0.95rem;
+      color: var(--red);
+      margin-left: 0.6rem;
+      vertical-align: middle;
+    }
+
+    /* ── PAGE WRAPPER ── */
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 2rem 0 6rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    hr.rule {
+      border: none;
+      border-top: 1.5px solid var(--ink);
+      margin: 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    section { padding: 4.5rem 0; position: relative; }
+
+    .sec-label {
+      font-family: var(--hand);
+      font-size: 1.1rem;
+      color: var(--red);
+      margin-bottom: 0.3rem;
+      display: block;
+    }
+
+    h2 {
+      font-family: var(--display);
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 800;
+      line-height: 0.92;
+      letter-spacing: -0.04em;
+      margin-bottom: 1.5rem;
+    }
+
+    p.body {
+      font-family: var(--type);
+      font-size: 0.95rem;
+      color: var(--ink-mid);
+      max-width: 520px;
+      line-height: 1.9;
+    }
+
+    /* ── CODE WINDOWS ── */
+    .code-window {
+      margin: 2rem 0;
+      border: 1.5px solid var(--ink-light);
+      background: #1a1208;
+      overflow: hidden;
+    }
+
+    .code-titlebar {
+      background: #0f0b05;
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid #2a2010;
+    }
+
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.r { background: #ff5f57; }
+    .dot.y { background: #febc2e; }
+    .dot.g { background: #28c840; }
+
+    .code-fn {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: #5a4a30;
+      margin-left: auto;
+      letter-spacing: 0.06em;
+    }
+
+    pre {
+      padding: 1.4rem 1.5rem;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 0.855rem;
+      line-height: 1.85;
+      color: #e8dfc8;
+    }
+
+    .kw  { color: #d4875a; font-weight: 600; }
+    .str { color: #9ab87a; }
+    .cm  { color: #4a3e28; font-style: italic; }
+    .num { color: #7ab8d4; }
+    .fn  { color: #c4a86a; }
+
+    /* ── TOKEN TABLE ── */
+    .notebook-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 2rem 0;
+      font-family: var(--type);
+      font-size: 0.875rem;
+    }
+
+    .notebook-table thead th {
+      font-family: var(--hand);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--red);
+      text-align: left;
+      padding: 0.5rem 1rem 0.6rem;
+      border-bottom: 2px solid var(--ink);
+    }
+
+    .notebook-table tbody tr {
+      border-bottom: 1px dashed rgba(44,30,10,0.15);
+    }
+    .notebook-table tbody tr:hover { background: rgba(44,30,10,0.04); }
+
+    .notebook-table td {
+      padding: 0.5rem 1rem;
+      vertical-align: middle;
+      line-height: 1.5;
+    }
+
+    .notebook-table td.short {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--accent);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .notebook-table td.long {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--ink-mid);
+      white-space: nowrap;
+    }
+
+    .notebook-table td.equiv {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--ink-light);
+    }
+
+    /* ── TABS ── */
+    .tab-row {
+      display: flex;
+      border-bottom: 1.5px solid var(--ink);
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      font-family: var(--hand);
+      font-size: 1.05rem;
+      padding: 0.4rem 1.1rem;
+      border: none;
+      border-right: 1px solid var(--ink-light);
+      border-bottom: none;
+      background: transparent;
+      color: var(--ink-light);
+      cursor: pointer;
+      transition: color 0.1s;
+      position: relative;
+      top: 1.5px;
+    }
+    .tab-btn.active {
+      color: var(--ink);
+      background: var(--paper);
+      border-top: 1.5px solid var(--ink);
+      border-left: 1.5px solid var(--ink);
+      border-bottom: 1.5px solid var(--paper);
+    }
+    .tab-btn:last-child { border-right: none; }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── ARCH ── */
+    .arch-box {
+      background: var(--paper2);
+      border: 1.5px dashed var(--ink-light);
+      padding: 1.5rem 1.8rem;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      line-height: 2.1;
+      color: var(--ink);
+      margin: 1.5rem 0;
+      white-space: pre;
+      overflow-x: auto;
+      position: relative;
+    }
+
+    .arch-kw { color: var(--accent); font-weight: 600; }
+
+    /* ── STEPS ── */
+    .steps { display: flex; flex-direction: column; gap: 2rem; margin: 2rem 0; }
+
+    .step {
+      display: grid;
+      grid-template-columns: 2.5rem 1fr;
+      gap: 1.2rem;
+      align-items: start;
+    }
+
+    .step-num {
+      font-family: var(--hand);
+      font-size: 1.6rem;
+      color: var(--red);
+      line-height: 1;
+      padding-top: 0.1rem;
+    }
+
+    .step-body h3 {
+      font-family: var(--type);
+      font-size: 1.05rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .step-body p {
+      font-family: var(--type);
+      font-size: 0.875rem;
+      color: var(--ink-mid);
+      line-height: 1.7;
+      margin-bottom: 0.4rem;
+    }
+
+    .step-code {
+      background: #1a1208;
+      color: #e8dfc8;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      padding: 0.6rem 1rem;
+      border: 1px solid var(--ink-light);
+      display: block;
+      margin-top: 0.4rem;
+      line-height: 1.6;
+    }
+
+    /* ── KEYBOARD ── */
+    .key-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin: 1.5rem 0;
+    }
+
+    .key-row { display: flex; gap: 4px; }
+
+    .key {
+      min-width: 36px;
+      height: 36px;
+      border: 1.5px solid var(--ink-mid);
+      background: var(--paper2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 3px;
+      box-shadow: 0 2px 0 var(--ink-light);
+    }
+
+    .key .k-steno {
+      font-family: var(--hand);
+      font-size: 0.72rem;
+      color: var(--accent);
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .key .k-qwerty {
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      color: var(--ink-light);
+      line-height: 1;
+    }
+
+    .key.thumb {
+      background: #e8e0cc;
+      min-width: 48px;
+    }
+
+    .key.starred { border-color: var(--red); }
+    .key.starred .k-steno { color: var(--red); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1.5px solid var(--ink);
+      padding: 2rem 2rem 2rem 6rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .footer-sig {
+      font-family: var(--hand);
+      font-size: 1.3rem;
+      color: var(--ink-mid);
+    }
+
+    .footer-meta {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--ink-light);
+      text-align: right;
+      line-height: 1.7;
+    }
+
+    footer a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    @media (max-width: 640px) {
+      header, .page, footer { padding-left: 2.8rem; }
+      body::after { left: 46px; }
+      .header-hole { left: 10px; }
+      .notebook-table td.equiv { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<header>
+  <div class="header-hole" aria-hidden="true">
+    <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    <div class="hole"></div><div class="hole"></div>
+  </div>
+
+  <!-- Gregg-style shorthand SVG background illustration -->
+  <svg class="header-shorthand" viewBox="0 0 500 420" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <!-- S — oval -->
+    <ellipse cx="80" cy="90" rx="52" ry="34" stroke="#1c1209" stroke-width="6" stroke-linecap="round"/>
+    <!-- T — vertical stroke + tick -->
+    <line x1="180" y1="40" x2="180" y2="130" stroke="#1c1209" stroke-width="5" stroke-linecap="round"/>
+    <path d="M163 43 Q180 36 197 43" stroke="#1c1209" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <!-- E — right-opening bracket sweep -->
+    <path d="M240 55 Q320 48 342 90 Q320 132 240 130" stroke="#1c1209" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- N — two humps -->
+    <path d="M385 130 Q396 50 418 90 Q438 130 458 60 Q472 20 490 58" stroke="#1c1209" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <!-- O — large circle -->
+    <circle cx="100" cy="270" r="60" stroke="#1c1209" stroke-width="6"/>
+    <!-- connecting baseline dashes -->
+    <path d="M30 350 Q150 330 280 345 Q390 358 490 335" stroke="#1c1209" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-dasharray="6 9"/>
+    <!-- decorative small steno marks -->
+    <path d="M300 200 Q322 158 352 190 Q372 222 342 242" stroke="#1c1209" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <line x1="380" y1="200" x2="380" y2="252" stroke="#1c1209" stroke-width="4" stroke-linecap="round"/>
+    <path d="M412 210 Q444 198 452 226 Q442 254 412 248" stroke="#1c1209" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M202 292 Q232 268 252 300 Q232 332 202 322 Z" stroke="#1c1209" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M310 315 Q342 280 372 312" stroke="#1c1209" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="432" cy="355" rx="25" ry="16" stroke="#1c1209" stroke-width="3.5"/>
+  </svg>
+
+  <div class="label-stamp">CS420 Final Project · Laila Brown &amp; Ashley Gutierrez Carreto</div>
+
+  <h1>STENO
+    <span class="h1-handwrite">a shorthand programming language</span>
+  </h1>
+
+  <p class="tagline">
+    Inspired by the art of stenography — where every stroke means something.<br>
+    Write code like a court reporter takes notes: fast, precise, abbreviated.
+  </p>
+
+  <div class="cta-row">
+    <a class="btn primary" href="https://github.com/ashlibel/steno" target="_blank">View on GitHub</a>
+    <span class="btn-ann">← try this!</span>
+    <a class="btn" href="#examples">See Examples</a>
+    <a class="btn" href="#quickstart">Get Started</a>
+  </div>
+</header>
+
+<hr class="rule" />
+
+<!-- WHAT IS IT -->
+<div class="page">
+<section class="reveal">
+  <span class="sec-label">What is it?</span>
+  <h2>Code at<br>steno speed</h2>
+  <p class="body">
+    STENO is an interpreted language with a built-in transpiler to Python. Every keyword is a 2–3 character abbreviation — <code style="font-family:var(--mono);color:var(--accent);font-size:0.88em">lp</code> for loop, <code style="font-family:var(--mono);color:var(--accent);font-size:0.88em">fn</code> for function, <code style="font-family:var(--mono);color:var(--accent);font-size:0.88em">pr</code> for print. Just like a stenographer who writes entire words in one chord, STENO lets you write entire constructs in a single token.
+  </p>
+
+  <div style="margin:2rem 0;display:flex;align-items:flex-start;gap:2rem;flex-wrap:wrap;">
+    <div>
+      <p style="font-family:var(--hand);font-size:1rem;color:var(--red);margin-bottom:0.5rem;">in Python:</p>
+      <div class="code-window" style="min-width:240px;">
+        <pre style="padding:1rem 1.2rem;font-size:0.82rem;line-height:1.9;color:#9ab87a;">for i in range(0, 10):
+    print(i)
+
+def add(a, b):
+    return a + b</pre>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;padding-top:3.5rem;">
+      <svg width="72" height="36" viewBox="0 0 72 36" aria-hidden="true">
+        <path d="M6 18 L60 18 M50 8 L60 18 L50 28" stroke="#8b1a1a" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="33" y="12" font-family="Caveat,cursive" font-size="11" fill="#8b1a1a" text-anchor="middle">steno!</text>
+      </svg>
+    </div>
+
+    <div>
+      <p style="font-family:var(--hand);font-size:1rem;color:var(--red);margin-bottom:0.5rem;">in STENO:</p>
+      <div class="code-window" style="min-width:200px;">
+        <pre style="padding:1rem 1.2rem;font-size:0.82rem;line-height:1.9;"><span class="kw">lp</span> i .. 0 10
+    <span class="kw">pr</span> i
+
+<span class="kw">fn</span> <span class="fn">add</span> a b
+    <span class="kw">rt</span> a + b</pre>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<hr class="rule" />
+
+<!-- TOKEN REFERENCE -->
+<div class="page">
+<section class="reveal">
+  <span class="sec-label">Cheat sheet</span>
+  <h2>Token<br>reference</h2>
+  <p class="body" style="margin-bottom:0.5rem;">Both the short form and long alias work — pick what feels right.</p>
+
+  <!-- small shorthand doodle -->
+  <svg style="position:absolute;right:0;top:2rem;opacity:0.08;width:140px;" viewBox="0 0 160 200" fill="none" aria-hidden="true">
+    <path d="M20 40 Q60 10 100 40 Q140 70 120 120 Q100 170 40 160 Q10 155 20 120 Q30 90 80 100" stroke="#1c1209" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <line x1="130" y1="30" x2="130" y2="90" stroke="#1c1209" stroke-width="4" stroke-linecap="round"/>
+    <path d="M110 32 Q130 24 150 32" stroke="#1c1209" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <ellipse cx="40" cy="170" rx="20" ry="12" stroke="#1c1209" stroke-width="3"/>
+  </svg>
+
+  <table class="notebook-table">
+    <thead>
+      <tr>
+        <th>short</th>
+        <th>long alias</th>
+        <th>python equivalent</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="short">lp i .. 0 10</td><td class="long">for i .. 0 10</td><td class="equiv">for i in range(0, 10):</td></tr>
+      <tr><td class="short">lp x items</td><td class="long">for x items</td><td class="equiv">for x in items:</td></tr>
+      <tr><td class="short">wh x &gt; 0</td><td class="long">while x &gt; 0</td><td class="equiv">while x &gt; 0:</td></tr>
+      <tr><td class="short">fn add a b</td><td class="long">def add a b</td><td class="equiv">def add(a, b):</td></tr>
+      <tr><td class="short">cl Stack</td><td class="long">class Stack</td><td class="equiv">class Stack:</td></tr>
+      <tr><td class="short">rt x + y</td><td class="long">return x + y</td><td class="equiv">return x + y</td></tr>
+      <tr><td class="short">if x &gt; 0</td><td class="long">if x &gt; 0</td><td class="equiv">if x &gt; 0:</td></tr>
+      <tr><td class="short">el</td><td class="long">else</td><td class="equiv">else:</td></tr>
+      <tr><td class="short">el if x == 0</td><td class="long">else if x == 0</td><td class="equiv">elif x == 0:</td></tr>
+      <tr><td class="short">pr "hello"</td><td class="long">print "hello"</td><td class="equiv">print("hello")</td></tr>
+      <tr><td class="short">vr x = 5</td><td class="long">var x = 5</td><td class="equiv">x = 5</td></tr>
+      <tr><td class="short">im math</td><td class="long">import math</td><td class="equiv">import math</td></tr>
+      <tr><td class="short">fr math im sqrt</td><td class="long">from math im sqrt</td><td class="equiv">from math import sqrt</td></tr>
+      <tr><td class="short">tr</td><td class="long">try</td><td class="equiv">try:</td></tr>
+      <tr><td class="short">ex Exception</td><td class="long">except Exception</td><td class="equiv">except Exception:</td></tr>
+      <tr><td class="short">br / ct / ps</td><td class="long">break / continue / pass</td><td class="equiv">break / continue / pass</td></tr>
+      <tr><td class="short">[x fr items if c]</td><td class="long">—</td><td class="equiv">[x for x in items if c]</td></tr>
+    </tbody>
+  </table>
+</section>
+</div>
+
+<hr class="rule" />
+
+<!-- EXAMPLES -->
+<div class="page">
+<section id="examples" class="reveal">
+  <span class="sec-label">Code samples</span>
+  <h2>Five programs<br>to explore</h2>
+
+  <div class="tab-row">
+    <button class="tab-btn active" onclick="showTab('fizzbuzz',this)">fizzbuzz</button>
+    <button class="tab-btn" onclick="showTab('calc',this)">calculator</button>
+    <button class="tab-btn" onclick="showTab('stack',this)">stack</button>
+    <button class="tab-btn" onclick="showTab('cipher',this)">caesar</button>
+    <button class="tab-btn" onclick="showTab('listops',this)">list ops</button>
+  </div>
+
+  <div id="tab-fizzbuzz" class="tab-content active">
+    <div class="code-window" style="border-top:none;">
+      <div class="code-titlebar">
+        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+        <span class="code-fn">fizzbuzz.sten</span>
+      </div>
+      <pre><span class="cm"># FizzBuzz — lp, if/el if/el, pr, modulo</span>
+
+<span class="kw">pr</span> <span class="str">"=== FizzBuzz 1-100 ==="</span>
+
+<span class="kw">lp</span> i .. <span class="num">1</span> <span class="num">101</span>
+    <span class="kw">if</span> i % <span class="num">15</span> == <span class="num">0</span>
+        <span class="kw">pr</span> <span class="str">"FizzBuzz"</span>
+    <span class="kw">el if</span> i % <span class="num">3</span> == <span class="num">0</span>
+        <span class="kw">pr</span> <span class="str">"Fizz"</span>
+    <span class="kw">el if</span> i % <span class="num">5</span> == <span class="num">0</span>
+        <span class="kw">pr</span> <span class="str">"Buzz"</span>
+    <span class="kw">el</span>
+        <span class="kw">pr</span> i</pre>
+    </div>
+  </div>
+
+  <div id="tab-calc" class="tab-content">
+    <div class="code-window" style="border-top:none;">
+      <div class="code-titlebar">
+        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+        <span class="code-fn">calculator.sten</span>
+      </div>
+      <pre><span class="cm"># fn, rt, tr/ex, if/el</span>
+
+<span class="kw">fn</span> <span class="fn">divide</span> a b
+    <span class="kw">tr</span>
+        <span class="kw">if</span> b == <span class="num">0</span>
+            <span class="kw">pr</span> <span class="str">"Error: division by zero"</span>
+            <span class="kw">rt</span> None
+        <span class="kw">rt</span> a / b
+    <span class="kw">ex</span> Exception e
+        <span class="kw">pr</span> <span class="str">"Unexpected:"</span> e
+
+<span class="kw">pr</span> divide(<span class="num">10</span>, <span class="num">2</span>)   <span class="cm"># 5.0</span>
+<span class="kw">pr</span> divide(<span class="num">9</span>, <span class="num">0</span>)    <span class="cm"># error</span></pre>
+    </div>
+  </div>
+
+  <div id="tab-stack" class="tab-content">
+    <div class="code-window" style="border-top:none;">
+      <div class="code-titlebar">
+        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+        <span class="code-fn">data_structures.sten</span>
+      </div>
+      <pre><span class="cm"># cl, fn, self, methods</span>
+
+<span class="kw">cl</span> <span class="fn">Stack</span>
+    <span class="kw">fn</span> __init__ self
+        self.items = []
+        self.size = <span class="num">0</span>
+
+    <span class="kw">fn</span> <span class="fn">push</span> self item
+        self.items.append(item)
+        self.size += <span class="num">1</span>
+
+    <span class="kw">fn</span> <span class="fn">pop</span> self
+        <span class="kw">if</span> self.size == <span class="num">0</span>
+            <span class="kw">pr</span> <span class="str">"Stack underflow!"</span>
+            <span class="kw">rt</span> None
+        self.size -= <span class="num">1</span>
+        <span class="kw">rt</span> self.items.pop()
+
+<span class="kw">vr</span> s = Stack()
+<span class="kw">lp</span> i .. <span class="num">1</span> <span class="num">6</span>
+    s.push(i * <span class="num">10</span>)
+<span class="kw">pr</span> <span class="str">"Pop:"</span> s.pop()</pre>
+    </div>
+  </div>
+
+  <div id="tab-cipher" class="tab-content">
+    <div class="code-window" style="border-top:none;">
+      <div class="code-titlebar">
+        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+        <span class="code-fn">data_structures.sten</span>
+      </div>
+      <pre><span class="cm"># Caesar cipher — fn, lp, string ops</span>
+
+<span class="kw">fn</span> <span class="fn">caesar_encrypt</span> text shift
+    <span class="kw">vr</span> result = <span class="str">""</span>
+    <span class="kw">lp</span> ch text
+        <span class="kw">vr</span> code = ord(ch)
+        <span class="kw">if</span> code >= <span class="num">65</span> and code <= <span class="num">90</span>
+            result += chr((code-<span class="num">65</span>+shift) % <span class="num">26</span> + <span class="num">65</span>)
+        <span class="kw">el if</span> code >= <span class="num">97</span> and code <= <span class="num">122</span>
+            result += chr((code-<span class="num">97</span>+shift) % <span class="num">26</span> + <span class="num">97</span>)
+        <span class="kw">el</span>
+            result += ch
+    <span class="kw">rt</span> result
+
+<span class="kw">vr</span> enc = caesar_encrypt(<span class="str">"Hello STENO"</span>, <span class="num">13</span>)
+<span class="kw">pr</span> enc   <span class="cm"># Uryyb FGRAB</span></pre>
+    </div>
+  </div>
+
+  <div id="tab-listops" class="tab-content">
+    <div class="code-window" style="border-top:none;">
+      <div class="code-titlebar">
+        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+        <span class="code-fn">list_ops.sten</span>
+      </div>
+      <pre><span class="cm"># list comprehensions, wh, augmented assign</span>
+
+<span class="kw">vr</span> nums = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>, <span class="num">7</span>, <span class="num">8</span>]
+
+<span class="cm"># list comprehension</span>
+<span class="kw">vr</span> evens = [x <span class="kw">fr</span> nums if x % <span class="num">2</span> == <span class="num">0</span>]
+<span class="kw">pr</span> <span class="str">"Evens:"</span> evens
+
+<span class="cm"># while accumulator</span>
+<span class="kw">vr</span> total = <span class="num">0</span>
+<span class="kw">vr</span> i = <span class="num">0</span>
+<span class="kw">wh</span> i < len(nums)
+    total += nums[i]
+    i += <span class="num">1</span>
+<span class="kw">pr</span> <span class="str">"Sum:"</span> total</pre>
+    </div>
+  </div>
+</section>
+</div>
+
+<hr class="rule" />
+
+<!-- ARCHITECTURE -->
+<div class="page">
+<section class="reveal">
+  <span class="sec-label">Under the hood</span>
+  <h2>Architecture</h2>
+  <p class="body">A classic pipeline: lex → parse → interpret or transpile.</p>
+
+  <div class="arch-box">your_file<span class="arch-kw">.sten</span>
+      │
+      ▼  <span class="arch-kw">lexer.py</span>
+   Token stream   (TT enum, Token dataclass)
+      │
+      ▼  <span class="arch-kw">parser.py</span>
+   AST             (ast_nodes.py dataclasses)
+      │
+      ├──▶  <span class="arch-kw">interpreter.py</span>   tree-walk, direct execution
+      │
+      └──▶  <span class="arch-kw">transpiler.py</span>    AST → Python source
+
+<span class="arch-kw">steno.py</span>  wires everything — CLI + REPL</div>
+</section>
+</div>
+
+<hr class="rule" />
+
+<!-- QUICKSTART -->
+<div class="page">
+<section id="quickstart" class="reveal">
+  <span class="sec-label">Get started</span>
+  <h2>Up &amp; running<br>in 60 seconds</h2>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1.</div>
+      <div class="step-body">
+        <h3>Clone the repo</h3>
+        <code class="step-code">git clone https://github.com/ashlibel/steno.git
+cd steno</code>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2.</div>
+      <div class="step-body">
+        <h3>Run the demo</h3>
+        <p>No dependencies beyond Python 3. Runs all five example programs at once.</p>
+        <code class="step-code">python steno.py demo</code>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3.</div>
+      <div class="step-body">
+        <h3>Run a single file</h3>
+        <code class="step-code">python steno.py run hello_world.sten</code>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4.</div>
+      <div class="step-body">
+        <h3>Open the REPL</h3>
+        <p>Interactive prompt — type STENO one line at a time.</p>
+        <code class="step-code">python steno.py</code>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">5.</div>
+      <div class="step-body">
+        <h3>Debug &amp; transpile</h3>
+        <code class="step-code">python steno.py tokens fizzbuzz.sten   # token stream
+python steno.py ast    fizzbuzz.sten   # AST dump
+python steno.py check  fizzbuzz.sten   # syntax only
+python steno.py compile fizzbuzz.sten  # → Python</code>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<hr class="rule" />
+
+<!-- KEYBOARD -->
+<div class="page">
+<section class="reveal">
+  <span class="sec-label">Real steno</span>
+  <h2>Write STENO<br>with actual steno</h2>
+  <p class="body" style="margin-bottom:1.5rem;">
+    STENO ships with a <a href="https://www.openstenoproject.org/plover/" style="color:var(--accent)">Plover</a> dictionary so you can chord the language on a real steno keyboard. Load <code style="font-family:var(--mono);font-size:0.85em">steno_lang_dict.json</code> above your main dictionary. NKRO required — check at <a href="https://keyboardtester.com" style="color:var(--accent)">keyboardtester.com</a>.
+  </p>
+
+  <div class="key-layout" aria-label="Steno keyboard layout" style="max-width:520px;">
+    <div class="key-row">
+      <div class="key"><span class="k-steno">#</span><span class="k-qwerty">1</span></div>
+      <div class="key"><span class="k-steno">#</span><span class="k-qwerty">2</span></div>
+      <div class="key"><span class="k-steno">#</span><span class="k-qwerty">3</span></div>
+      <div class="key"><span class="k-steno">#</span><span class="k-qwerty">4</span></div>
+      <div class="key"><span class="k-steno">#</span><span class="k-qwerty">5</span></div>
+      <div class="key"><span class="k-steno">#</span><span class="k-qwerty">6</span></div>
+      <div class="key"><span class="k-steno">#</span><span class="k-qwerty">7</span></div>
+      <div class="key"><span class="k-steno">#</span><span class="k-qwerty">8</span></div>
+      <div class="key"><span class="k-steno">#</span><span class="k-qwerty">9</span></div>
+      <div class="key"><span class="k-steno">#</span><span class="k-qwerty">0</span></div>
+    </div>
+    <div class="key-row">
+      <div class="key"><span class="k-steno">S</span><span class="k-qwerty">Q</span></div>
+      <div class="key"><span class="k-steno">T</span><span class="k-qwerty">W</span></div>
+      <div class="key"><span class="k-steno">P</span><span class="k-qwerty">E</span></div>
+      <div class="key"><span class="k-steno">H</span><span class="k-qwerty">R</span></div>
+      <div class="key starred"><span class="k-steno">*</span><span class="k-qwerty">T</span></div>
+      <div class="key starred"><span class="k-steno">*</span><span class="k-qwerty">Y</span></div>
+      <div class="key"><span class="k-steno">-F</span><span class="k-qwerty">U</span></div>
+      <div class="key"><span class="k-steno">-P</span><span class="k-qwerty">I</span></div>
+      <div class="key"><span class="k-steno">-L</span><span class="k-qwerty">O</span></div>
+      <div class="key"><span class="k-steno">-T</span><span class="k-qwerty">P</span></div>
+      <div class="key"><span class="k-steno">-D</span><span class="k-qwerty">[</span></div>
+    </div>
+    <div class="key-row">
+      <div class="key"><span class="k-steno">S</span><span class="k-qwerty">A</span></div>
+      <div class="key"><span class="k-steno">K</span><span class="k-qwerty">S</span></div>
+      <div class="key"><span class="k-steno">W</span><span class="k-qwerty">D</span></div>
+      <div class="key"><span class="k-steno">R</span><span class="k-qwerty">F</span></div>
+      <div class="key starred"><span class="k-steno">*</span><span class="k-qwerty">G</span></div>
+      <div class="key starred"><span class="k-steno">*</span><span class="k-qwerty">H</span></div>
+      <div class="key"><span class="k-steno">-R</span><span class="k-qwerty">J</span></div>
+      <div class="key"><span class="k-steno">-B</span><span class="k-qwerty">K</span></div>
+      <div class="key"><span class="k-steno">-G</span><span class="k-qwerty">L</span></div>
+      <div class="key"><span class="k-steno">-S</span><span class="k-qwerty">;</span></div>
+      <div class="key"><span class="k-steno">-Z</span><span class="k-qwerty">'</span></div>
+    </div>
+    <div class="key-row" style="padding-left:52px;">
+      <div class="key thumb"><span class="k-steno">A</span><span class="k-qwerty">C</span></div>
+      <div class="key thumb"><span class="k-steno">O</span><span class="k-qwerty">V</span></div>
+      <div class="key thumb"><span class="k-steno">E</span><span class="k-qwerty">N</span></div>
+      <div class="key thumb"><span class="k-steno">U</span><span class="k-qwerty">M</span></div>
+    </div>
+  </div>
+
+  <p style="font-family:var(--hand);font-size:1rem;color:var(--red);margin-top:1rem;">
+    ↑ order: # S T K P W H R * A O — E U F R P B L G T S D Z
+  </p>
+</section>
+</div>
+
+<hr class="rule" />
+
+<footer>
+  <div class="footer-sig">
+    Laila Brown &amp; Ashley Gutierrez Carreto
+    <div style="font-family:var(--type);font-size:0.78rem;color:var(--ink-light);margin-top:0.2rem;">CS420 Final Project</div>
+  </div>
+  <div class="footer-meta">
+    <a href="https://github.com/ashlibel/steno">github.com/ashlibel/steno</a><br>
+    Built with Python &amp; stenographic spirit
+  </div>
+</footer>
+
+<script>
+  function showTab(name, btn) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
