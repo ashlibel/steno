@@ -1,17 +1,11 @@
-# hello_world.sten
-# Simple Program 1 — Hello World & basic arithmetic
-# Demonstrates: pr, vr, string literals, basic math
-
 vr name = "STENO"
 vr version = 1
-
 pr "Hello, World!"
 pr "Welcome to" name "v" version
-
 vr x = 10
 vr y = 3
-pr "x + y =" x + y
-pr "x * y =" x * y
-pr "x // y =" x // y
-pr "x % y =" x % y
-pr "x ** y =" x ** y
+pr x + y
+pr x * y
+pr x // y
+pr x % y
+pr x ** y

@@ -1,9 +1,3 @@
-# fizzbuzz.sten
-# FizzBuzz — required program (d)
-# Demonstrates: lp, if/el if/el, pr, modulo
-
-pr "=== FizzBuzz 1-100 ==="
-
 lp i .. 1 101
     if i % 15 == 0
         pr "FizzBuzz"

@@ -1,7 +1,3 @@
-# calculator.sten
-# Simple Program 2 — Function-based calculator
-# Demonstrates: fn, rt, if/el, vr, pr, basic operators
-
 fn add a b
     rt a + b
 
@@ -13,7 +9,7 @@ fn multiply a b
 
 fn divide a b
     if b == 0
-        pr "Error: Division by zero"
+        pr "Error: can't divide by zero"
         rt None
     rt a / b
 
@@ -28,8 +24,7 @@ fn describe_number n
     el
         pr n "is zero"
 
-# Run the calculator
-pr "=== STENO Calculator ==="
+pr "Our STENO Calculator"
 pr "5 + 3 =" add(5, 3)
 pr "10 - 4 =" subtract(10, 4)
 pr "6 * 7 =" multiply(6, 7)
@@ -39,7 +34,7 @@ pr "10 / 0:"
 divide(10, 0)
 
 pr ""
-pr "=== Number descriptions ==="
+pr "Number descriptions"
 describe_number(42)
 describe_number(-7)
 describe_number(0)

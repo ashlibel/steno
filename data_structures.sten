@@ -1,149 +1,34 @@
-# data_structures.sten
-# Complex Program — Linked List + Binary Search + Recursion
-# Demonstrates: cl, fn, lp, wh, tr/ex, vr, if/el, list comp,
-#               recursion, classes with methods, error handling
-
-# ── 1. Recursive algorithms ────────────────────────────────────────────────
-
-fn fibonacci n
-    if n <= 1
-        rt n
-    rt fibonacci(n - 1) + fibonacci(n - 2)
-
-fn factorial n
-    if n <= 1
-        rt 1
-    rt n * factorial(n - 1)
-
-pr "=== Recursive Algorithms ==="
-lp i .. 0 10
-    pr "fib(" i ") =" fibonacci(i)
-
-pr ""
-lp i .. 0 8
-    pr i "! =" factorial(i)
-
-
-# ── 2. Stack class ─────────────────────────────────────────────────────────
-
-cl Stack
+cl Playlist
     fn __init__ self
-        self.items = []
+        self.songs = []
         self.size = 0
 
-    fn push self item
-        self.items.append(item)
+    fn add_song self title
+        self.songs.append(title)
         self.size += 1
+        pr "Added:" title
 
-    fn pop self
+    fn play self
         if self.size == 0
-            pr "Stack underflow!"
+            pr "Playlist is empty!"
             rt None
+        vr song = self.songs.pop()
         self.size -= 1
-        rt self.items.pop()
-
-    fn peek self
-        if self.size == 0
-            rt None
-        rt self.items[self.size - 1]
-
-    fn is_empty self
-        rt self.size == 0
+        pr "Now playing:" song
 
     fn display self
-        pr "Stack:" self.items
+        pr "Playlist:" self.songs
 
-
+pr "STENO Playlist Manager"
 pr ""
-pr "=== Stack Demo ==="
-vr s = Stack()
-lp i .. 1 6
-    s.push(i * 10)
-
-s.display()
-pr "Peek:" s.peek()
-pr "Pop:" s.pop()
-pr "Pop:" s.pop()
-s.display()
-
-
-# ── 3. Binary search ────────────────────────────────────────────────────────
-
-fn binary_search arr target
-    vr low = 0
-    vr high = len(arr) - 1
-    vr steps = 0
-
-    wh low <= high
-        vr mid = (low + high) // 2
-        steps += 1
-        if arr[mid] == target
-            rt mid
-        el if arr[mid] < target
-            low = mid + 1
-        el
-            high = mid - 1
-
-    rt -1
-
+vr p = Playlist()
+p.add_song(" Whatch me Whip/ NAe Nae - Silento")
+p.add_song(" Never Gonna Give You Up - Rick Astley ")
+p.add_song("Fairytale Love - Chicano Batman")
 pr ""
-pr "=== Binary Search ==="
-vr sorted_list = [2, 5, 8, 12, 16, 23, 38, 45, 56, 72, 91]
-pr "List:" sorted_list
-
-lp target [23, 56, 1, 91, 38]
-    vr idx = binary_search(sorted_list, target)
-    if idx >= 0
-        pr "Found" target "at index" idx
-    el
-        pr target "not found"
-
-
-# ── 4. Caesar cipher ────────────────────────────────────────────────────────
-
-fn caesar_encrypt text shift
-    vr result = ""
-    lp ch text
-        vr code = ord(ch)
-        if code >= 65 and code <= 90
-            result += chr((code - 65 + shift) % 26 + 65)
-        el if code >= 97 and code <= 122
-            result += chr((code - 97 + shift) % 26 + 97)
-        el
-            result += ch
-    rt result
-
-fn caesar_decrypt text shift
-    rt caesar_encrypt(text, 26 - shift)
-
+p.display()
 pr ""
-pr "=== Caesar Cipher ==="
-vr message = "Hello STENO World"
-vr shift = 13
-vr encrypted = caesar_encrypt(message, shift)
-vr decrypted = caesar_decrypt(encrypted, shift)
-pr "Original: " message
-pr "Encrypted:" encrypted
-pr "Decrypted:" decrypted
-
-
-# ── 5. Word frequency counter ───────────────────────────────────────────────
-
-fn word_count text
-    vr words = text.lower().split()
-    vr counts = {}
-    lp word words
-        if word in counts
-            counts[word] += 1
-        el
-            counts[word] = 1
-    rt counts
-
+p.play()
+p.play()
 pr ""
-pr "=== Word Frequency ==="
-vr sentence = "the quick brown fox jumps over the lazy dog the fox"
-vr freq = word_count(sentence)
-pr "Text:" sentence
-pr "Frequencies:"
-lp word freq
-    pr " " word ":" freq[word]
+p.display()
