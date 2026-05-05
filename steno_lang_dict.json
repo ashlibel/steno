@@ -1,0 +1,110 @@
+{
+"meta": {
+  "name": "STENO Language Plover Dictionary",
+  "version": "1.0.0",
+  "description": "Maps steno chords to STENO language tokens. Load above your main dictionary in Plover.",
+  "keyboard_map": {
+    "note": "This dictionary uses the standard steno layout as mapped to your QWERTY keyboard.",
+    "layout": {
+      "Row 1 (number row 1-0)": "# (number bar — all produce #)",
+      "Row 1 (QWERTY top)": {
+        "Q": "S-",  "W": "T-",  "E": "P-",  "R": "H-",
+        "T": "*",   "Y": "*",
+        "U": "-F",  "I": "-P",  "O": "-L",  "P": "-T",  "[": "-D"
+      },
+      "Row 2 (QWERTY home)": {
+        "A": "S-",  "S": "K-",  "D": "W-",  "F": "R-",
+        "G": "*",   "H": "*",
+        "J": "-R",  "K": "-B",  "L": "-G",  ";": "-S",  "'": "-Z"
+      },
+      "Row 3 (QWERTY bottom — vowels)": {
+        "C": "A",  "V": "O",  "N": "E",  "M": "U"
+      }
+    },
+    "steno_order": "# S T K P W H R * A O - E U F R P B L G T S D Z"
+  }
+},
+
+"entries": {
+
+  "steno_token_chords": {
+    "note": "Each entry below maps a chord (in steno notation) to a STENO token string.",
+    "format": "\"CHORD\": \"output text\""
+  },
+
+  "HR-P": "lp ",
+  "W-B": "wh ",
+  "TP-": "fn ",
+  "KR-": "cl ",
+  "-F": "if ",
+  "EL": "el ",
+  "TR-": "tr ",
+  "SKP": "ex ",
+  "W-T": "wt ",
+  "R-T": "rt ",
+  "PR-": "pr ",
+  "SR-": "vr ",
+  "EUPL": "im ",
+  "TPR-": "fr ",
+  "KWHR": "yl ",
+  "PWR-": "br",
+  "K-T": "ct",
+  "P-S": "ps",
+  "TK-L": "dl ",
+  "TKPWL": "gl ",
+  "TPHR-": "nl ",
+  "SAES": "as ",
+
+  "DOTDOT": ".. ",
+
+  "STKPWHR": "lp i .. 0 10\n",
+  "STPH-FPLT": "lp i .. 0 100\n",
+
+  "TPH-RPBLG": "fn __init__(self):\n",
+  "SEL-T": "self.",
+
+  "OEPL": "== ",
+  "TPHO-PL": "!= ",
+  "TKPW-T": ">= ",
+  "HR-T": "<= ",
+
+  "SKW-R": "and ",
+  "ORP": "or ",
+  "TPHOET": "not ",
+
+  "R*R": "\n    ",
+  "R*RR": "\n        ",
+
+  "PR-FPLT": "pr f\"\"",
+  "HREUFT": "vr result = ",
+  "RAEPBG": "rt ",
+  "RAEUPBG": "range(",
+
+  "SEUPLT": "sum(",
+  "HREPBG": "len(",
+  "HREUFS": "list(",
+
+  "TKPWHRAO*EUPBT": "# ──"
+},
+
+"plover_setup": {
+  "step_1": "Install Plover: https://www.openstenoproject.org/plover/",
+  "step_2": "In Plover: Configure → Machine → set to 'Keyboard'",
+  "step_3": "Copy this file to your Plover dictionaries folder",
+  "step_4": "In Plover → Dictionaries: Add steno_lang_dict.json ABOVE your main dictionary",
+  "step_5": "Click the green power button in Plover to enable",
+  "step_6": "Now chords will output STENO tokens",
+  "keyboard_requirements": "N-Key Rollover (NKRO) is required. Test at keyboardtester.com — press 10+ keys and verify all register simultaneously. Standard keyboards only support 6-key rollover.",
+  "nkro_qmk": "If your keyboard uses QMK firmware: add NKRO_ENABLE = yes to rules.mk and #define FORCE_NKRO to config.h"
+},
+
+"chord_building_guide": {
+  "note": "Steno chords use simultaneous keypresses. Left hand = initial consonants, thumbs = vowels, right hand = final consonants.",
+  "left_hand_keys":  ["S(QA)", "T(W)",  "K(S)",  "P(E)",  "W(D)", "H(R)"],
+  "star_key":        ["*(TGYH)"],
+  "vowel_keys":      ["A(C)", "O(V)", "E(N)", "U(M)"],
+  "right_hand_keys": ["F(U)", "P(I)", "L(O)", "T(P)", "D([)", "R(J)", "B(K)", "G(L)", "S(;)", "Z(')"],
+  "number_bar":      "Any number key (1-0) adds # to the stroke",
+  "example": "To type 'lp ' — press H, R, and - simultaneously (HR-P chord)"
+}
+}
