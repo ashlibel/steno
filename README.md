@@ -26,7 +26,7 @@ python steno.py check  examples/fizzbuzz.sten   # syntax check only
 
 ---
 
-## The Five Programs
+## The Six Programs
 
 | File | Type | What it demonstrates |
 |------|------|----------------------|
@@ -34,6 +34,7 @@ python steno.py check  examples/fizzbuzz.sten   # syntax check only
 | `calculator.sten` | Simple (2) | `fn`, `rt`, `if`/`el if`/`el`, function calls, error handling |
 | `list_ops.sten` | Simple (3) | `vr`, `lp`, `wh`, list comprehensions, augmented assignment |
 | `fizzbuzz.sten` | FizzBuzz (d) | `lp .. `, `if`/`el if`/`el`, `pr`, modulo |
+| `fibonacci.sten` | Recursive (e) | `fn`, `if`, `rt`, recursive calls, `lp`, `pr` |
 | `data_structures.sten` | Complex (c) | `cl`, recursion, `Stack` class, binary search, Caesar cipher, word frequency |
 
 ---

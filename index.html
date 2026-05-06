@@ -656,7 +656,7 @@ def add(a, b):
 <div class="page">
 <section id="examples" class="reveal">
   <span class="sec-label">Code samples</span>
-  <h2>Five programs<br>to explore</h2>
+  <h2>Six programs<br>to explore</h2>
 
   <div class="tab-row">
     <button class="tab-btn active" onclick="showTab('fizzbuzz',this)">fizzbuzz</button>
@@ -664,6 +664,7 @@ def add(a, b):
     <button class="tab-btn" onclick="showTab('stack',this)">stack</button>
     <button class="tab-btn" onclick="showTab('cipher',this)">caesar</button>
     <button class="tab-btn" onclick="showTab('listops',this)">list ops</button>
+    <button class="tab-btn" onclick="showTab('fib',this)">fibonacci</button>
   </div>
 
   <div id="tab-fizzbuzz" class="tab-content active">
@@ -789,6 +790,24 @@ def add(a, b):
 <span class="kw">pr</span> <span class="str">"Sum:"</span> total</pre>
     </div>
   </div>
+
+  <div id="tab-fib" class="tab-content">
+    <div class="code-window" style="border-top:none;">
+      <div class="code-titlebar">
+        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+        <span class="code-fn">fibonacci.sten</span>
+      </div>
+      <pre><span class="cm"># Fibonacci — fn, if, rt, lp, pr</span>
+
+<span class="kw">fn</span> <span class="fn">fibonacci</span> n
+    <span class="kw">if</span> n <= <span class="num">1</span>
+        <span class="kw">rt</span> n
+    <span class="kw">rt</span> fibonacci(n - <span class="num">1</span>) + fibonacci(n - <span class="num">2</span>)
+
+<span class="kw">lp</span> i .. <span class="num">0</span> <span class="num">10</span>
+    <span class="kw">pr</span> <span class="str">"fib("</span> i <span class="str">") ="</span> fibonacci(i)</pre>
+    </div>
+  </div>
 </section>
 </div>
 
@@ -883,8 +902,37 @@ python steno.py compile fizzbuzz.sten  # → Python</code>
   <span class="sec-label">Real steno</span>
   <h2>Write STENO<br>with actual steno</h2>
   <p class="body" style="margin-bottom:1.5rem;">
-    STENO ships with a <a href="https://www.openstenoproject.org/plover/" style="color:var(--accent)">Plover</a> dictionary so you can chord the language on a real steno keyboard. Load <code style="font-family:var(--mono);font-size:0.85em">steno_lang_dict.json</code> above your main dictionary. NKRO required — check at <a href="https://keyboardtester.com" style="color:var(--accent)">keyboardtester.com</a>.
+    STENO ships with a Plover dictionary so you can chord the language on a real steno keyboard. Follow these three steps to get set up:
   </p>
+
+  <div class="steps" style="margin-bottom:1.5rem;">
+    <div class="step">
+      <div class="step-num">1.</div>
+      <div class="step-body">
+        <h3>Download &amp; install Plover</h3>
+        <p>Plover is the free, open-source steno engine. Grab the latest release for your OS.</p>
+        <a href="https://www.openstenoproject.org/plover/" style="font-family:var(--mono);font-size:0.82rem;color:var(--accent);border-bottom:1px solid var(--accent);text-decoration:none;">openstenoproject.org/plover/ →</a>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2.</div>
+      <div class="step-body">
+        <h3>Build your steno keytoppers</h3>
+        <p>Turn your regular keyboard into a steno machine with printed keytoppers — free and printable. Must be used with an Nkey rollover keyboard.</p>
+        <a href="https://cemrajc.github.io/stenotoppers/" style="font-family:var(--mono);font-size:0.82rem;color:var(--accent);border-bottom:1px solid var(--accent);text-decoration:none;">cemrajc.github.io/stenotoppers/ →</a>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3.</div>
+      <div class="step-body">
+        <h3>Load the STENO dictionary</h3>
+        <p>In Plover's dictionary manager, add <code style="font-family:var(--mono);font-size:0.85em">steno_final_dict.json</code> from the repo above your main dictionary. That's it — start chordin'.</p>
+        <code class="step-code">steno_final_dict.json  ← add this above your main dict</code>
+      </div>
+    </div>
+  </div>
 
   <div class="key-layout" aria-label="Steno keyboard layout" style="max-width:520px;">
     <div class="key-row">
@@ -932,10 +980,6 @@ python steno.py compile fizzbuzz.sten  # → Python</code>
       <div class="key thumb"><span class="k-steno">U</span><span class="k-qwerty">M</span></div>
     </div>
   </div>
-
-  <p style="font-family:var(--hand);font-size:1rem;color:var(--red);margin-top:1rem;">
-    ↑ order: # S T K P W H R * A O — E U F R P B L G T S D Z
-  </p>
 </section>
 </div>
 
